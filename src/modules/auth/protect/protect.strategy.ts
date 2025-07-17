@@ -20,6 +20,9 @@ export class ProtectStrategy extends PassportStrategy(Strategy, 'protect') {
       where: {
         id: payload.userId,
       },
+      include: {
+        DatVe: true,
+      },
     });
 
     if (!user) {

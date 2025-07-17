@@ -7,6 +7,7 @@ import { UserModule } from './modules/user/user.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { TokenModule } from './modules/token/token.module';
 import { ProtectStrategy } from './modules/auth/protect/protect.strategy';
+import { FilmManagementModule } from './modules/film-management/film-management.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ProtectStrategy } from './modules/auth/protect/protect.strategy';
     UserModule,
     PrismaModule,
     TokenModule,
+    FilmManagementModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProtectStrategy],

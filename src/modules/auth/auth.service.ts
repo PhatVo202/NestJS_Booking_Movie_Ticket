@@ -57,6 +57,19 @@ export class AuthService {
       throw new BadRequestException('Tài khoản đã tồn tại! Hãy đăng nhập');
     }
 
+    // Kiểm tra email đã tồn tại chưa
+    const userByEmail = await this.prisma.nguoiDung.findFirst({
+      where: {
+        email: email,
+      },
+    });
+
+    if (userByEmail) {
+      throw new BadRequestException(
+        'Email đã được sử dụng! Vui lòng dùng email khác',
+      );
+    }
+
     const hashPassword = await bcrypt.hash(mat_khau, 10);
 
     const user = await this.prisma.nguoiDung.create({
