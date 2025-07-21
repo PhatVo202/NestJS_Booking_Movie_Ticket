@@ -9,6 +9,7 @@ import { TokenModule } from './modules/token/token.module';
 import { ProtectStrategy } from './modules/auth/protect/protect.strategy';
 import { FilmManagementModule } from './modules/film-management/film-management.module';
 import { TheaterManagementModule } from './modules/theater-management/theater-management.module';
+import { TicketManagementModule } from './ticket-management/ticket-management.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { TheaterManagementModule } from './modules/theater-management/theater-ma
     TokenModule,
     FilmManagementModule,
     TheaterManagementModule,
+    TicketManagementModule,
   ],
   controllers: [],
   providers: [AppService, ProtectStrategy],

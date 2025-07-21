@@ -60,7 +60,7 @@ model HeThongRap {
 }
 
 model LichChieu {
-  ma_lich_chieu  Int       @id
+  ma_lich_chieu  Int       @id @default(autoincrement())
   ma_rap         Int?
   ma_phim        Int?
   ngay_gio_chieu DateTime? @db.DateTime(0)
@@ -76,7 +76,7 @@ model LichChieu {
 model NguoiDung {
   id              Int     @id @default(autoincrement())
   tai_khoan       String? @unique(map: "tai_khoan") @db.VarChar(255)
-  ho_ten          String?  @db.VarChar(255)
+  ho_ten          String? @db.VarChar(255)
   email           String? @db.VarChar(255)
   so_dt           String? @db.VarChar(20)
   mat_khau        String? @db.VarChar(255)
