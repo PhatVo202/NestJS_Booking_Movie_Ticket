@@ -13,9 +13,12 @@ import { Public } from 'src/common/decorator/is-public.decorator';
 import {
   FilmQueryDayDto,
   FilmQueryDto,
+  FilmQueryMaPhimDto,
   FilmQueryPhanTrangDto,
 } from './dto/film.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Quản Lý Phim')
 @Controller('QuanLyPhim')
 export class FilmManagementController {
   constructor(private readonly filmManagementService: FilmManagementService) {}
@@ -58,5 +61,11 @@ export class FilmManagementController {
       File: 'img/sdewwf',
     };
     return this.filmManagementService.createNewFilm();
+  }
+
+  @Public()
+  @Get('LayThongTinPhim')
+  async getDetailFilm(@Query() query: FilmQueryMaPhimDto) {
+    return await this.filmManagementService.getDetailFilm(query);
   }
 }

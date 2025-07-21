@@ -8,6 +8,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
 import { TokenModule } from './modules/token/token.module';
 import { ProtectStrategy } from './modules/auth/protect/protect.strategy';
 import { FilmManagementModule } from './modules/film-management/film-management.module';
+import { TheaterManagementModule } from './modules/theater-management/theater-management.module';
 
 @Module({
   imports: [
@@ -17,8 +18,9 @@ import { FilmManagementModule } from './modules/film-management/film-management.
     PrismaModule,
     TokenModule,
     FilmManagementModule,
+    TheaterManagementModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [AppService, ProtectStrategy],
 })
 export class AppModule {}

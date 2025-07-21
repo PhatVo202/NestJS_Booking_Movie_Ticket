@@ -44,7 +44,6 @@ export class AuthService {
   }
 
   async register(body: RegisterDto) {
-    console.log({ body: body });
     const { tai_khoan, mat_khau, ho_ten, email, so_dt } = body;
 
     const userExits = await this.prisma.nguoiDung.findUnique({

@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import {
   FilmQueryDayDto,
   FilmQueryDto,
+  FilmQueryMaPhimDto,
   FilmQueryPhanTrangDto,
 } from './dto/film.dto';
 import { paginate } from 'src/common/helpers/paginate.helper';
@@ -82,5 +83,15 @@ export class FilmManagementService {
 
   async createNewFilm() {
     return 'Create success film';
+  }
+
+  async getDetailFilm(query: FilmQueryMaPhimDto) {
+    const { ma_phim } = query;
+
+    return await this.prisma.phim.findUnique({
+      where: {
+        ma_phim: Number(ma_phim),
+      },
+    });
   }
 }

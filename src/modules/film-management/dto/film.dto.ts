@@ -32,3 +32,8 @@ export class FilmQueryDayDto {
   @IsOptional()
   den_ngay?: string;
 }
+
+export class FilmQueryMaPhimDto {
+  @IsOptional()
+  ma_phim?: number;
+}
