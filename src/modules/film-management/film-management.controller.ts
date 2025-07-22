@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FilmManagementService } from './film-management.service';
 import { Public } from 'src/common/decorator/is-public.decorator';
@@ -15,8 +17,14 @@ import {
   FilmQueryDto,
   FilmQueryMaPhimDto,
   FilmQueryPhanTrangDto,
+  FilmUpdateDto,
+  FilmUploadDto,
+  RemoveQueryDto,
 } from './dto/film.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { User } from 'src/common/decorator/user.decorator';
+import { NguoiDung } from 'generated/prisma';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Quản Lý Phim')
 @Controller('QuanLyPhim')
@@ -48,24 +56,33 @@ export class FilmManagementController {
   }
 
   @Post('ThemPhimUploadHinh')
-  async createNewFilm() {
-    const data = {
-      tenPhim: 'Ghost Train',
-      moTa: 'Phim kinh dị nói về chuyến về quê của cô gái đầy kinh dị trên tàu',
-      ngayKhoiChieu: new Date(2025 - 16 - 7),
-      sapChieu: true,
-      danChieu: false,
-      hot: true,
-      danhGia: 10,
-      maPhim: 'GP01',
-      File: 'img/sdewwf',
-    };
-    return this.filmManagementService.createNewFilm();
+  @UseInterceptors(FileInterceptor('hinh_anh'))
+  async createNewFilm(
+    @Body() body: FilmUploadDto,
+    @UploadedFile() file: Express.Multer.File,
+    @User() user: NguoiDung,
+  ) {
+    return await this.filmManagementService.createNewFilm(body, file, user);
+  }
+
+  @Post('CapNhatPhimUpload')
+  @UseInterceptors(FileInterceptor('hinh_anh'))
+  async updateFilm(
+    @Body() body: FilmUpdateDto,
+    @UploadedFile() file: Express.Multer.File,
+    @User() user: NguoiDung,
+  ) {
+    return await this.filmManagementService.updateFilm(body, file, user);
   }
 
   @Public()
   @Get('LayThongTinPhim')
   async getDetailFilm(@Query() query: FilmQueryMaPhimDto) {
     return await this.filmManagementService.getDetailFilm(query);
+  }
+
+  @Delete('XoaPhim')
+  async removeFilm(@Query() query: RemoveQueryDto, @User() user: NguoiDung) {
+    return await this.filmManagementService.removeFilm(query, user);
   }
 }

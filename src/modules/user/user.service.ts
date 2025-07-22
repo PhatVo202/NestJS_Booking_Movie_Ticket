@@ -34,11 +34,11 @@ export class UserService {
     );
 
     if (uploadResult === undefined) {
-      throw new BadRequestException('Chua tim thay file');
+      throw new BadRequestException('Chưa tìm thấy file');
     }
 
     if (!user) {
-      throw new BadRequestException('Chua tim thay user');
+      throw new BadRequestException('Chưa tìm thấy user');
     }
 
     try {
@@ -51,12 +51,12 @@ export class UserService {
         },
       });
 
-      if (user.avatar) {
-        const oldFilePath = path.join('images', user.avatar);
-        if (fs.existsSync(oldFilePath)) {
-          fs.unlinkSync(oldFilePath);
-        }
-      }
+      // if (user.avatar) {
+      //   const oldFilePath = path.join('images', user.avatar);
+      //   if (fs.existsSync(oldFilePath)) {
+      //     fs.unlinkSync(oldFilePath);
+      //   }
+      // }
 
       if (user?.avatar) {
         cloudinary.uploader.destroy(user.avatar);

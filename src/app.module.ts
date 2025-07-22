@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
@@ -9,7 +8,7 @@ import { TokenModule } from './modules/token/token.module';
 import { ProtectStrategy } from './modules/auth/protect/protect.strategy';
 import { FilmManagementModule } from './modules/film-management/film-management.module';
 import { TheaterManagementModule } from './modules/theater-management/theater-management.module';
-import { TicketManagementModule } from './ticket-management/ticket-management.module';
+import { TicketManagementModule } from './modules/ticket-management/ticket-management.module';
 
 @Module({
   imports: [

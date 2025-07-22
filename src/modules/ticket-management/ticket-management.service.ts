@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -8,7 +9,7 @@ import {
   GetListRoomTicketDto,
   ShowScheduleDto,
 } from './dto/create-ticket-management.dto';
-import { UpdateTicketManagementDto } from './dto/update-ticket-management.dto';
+
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { NguoiDung } from 'generated/prisma';
 import * as dayjs from 'dayjs';
@@ -22,7 +23,7 @@ export class TicketManagementService {
     const { ma_lich_chieu, danhSachVe } = body;
 
     if (user.loai_nguoi_dung !== 'KhachHang') {
-      throw new NotFoundException('Admin không có quyền đặt vé');
+      throw new ForbiddenException('Admin không có quyền đặt vé');
     }
     const lichChieu = await this.prisma.lichChieu.findUnique({
       where: {
@@ -124,7 +125,7 @@ export class TicketManagementService {
     });
 
     if (user.loai_nguoi_dung !== 'QuanTri') {
-      throw new NotFoundException('Bạn không có quyền tạo lịch chiếu!');
+      throw new ForbiddenException('Bạn không có quyền tạo lịch chiếu!');
     }
 
     if (ngay_gio_chieu_format < isNowDate) {

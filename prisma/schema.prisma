@@ -9,7 +9,7 @@ datasource db {
 }
 
 model Banner {
-  ma_banner Int     @id
+  ma_banner Int     @id @default(autoincrement())
   ma_phim   Int?
   hinh_anh  String? @db.VarChar(255)
   Phim      Phim?   @relation(fields: [ma_phim], references: [ma_phim], onDelete: NoAction, onUpdate: NoAction, map: "Banner_ibfk_1")
@@ -18,7 +18,7 @@ model Banner {
 }
 
 model CumRap {
-  ma_cum_rap      Int         @id
+  ma_cum_rap      Int         @id @default(autoincrement())
   ten_cum_rap     String?     @db.VarChar(255)
   dia_chi         String?     @db.VarChar(255)
   ma_he_thong_rap Int?
@@ -42,7 +42,7 @@ model DatVe {
 }
 
 model Ghe {
-  ma_ghe   Int      @id
+  ma_ghe   Int      @id @default(autoincrement())
   ten_ghe  String?  @db.VarChar(50)
   loai_ghe String?  @db.VarChar(50)
   ma_rap   Int?
@@ -53,7 +53,7 @@ model Ghe {
 }
 
 model HeThongRap {
-  ma_he_thong_rap  Int      @id
+  ma_he_thong_rap  Int      @id @default(autoincrement())
   ten_he_thong_rap String?  @db.VarChar(255)
   logo             String?  @db.VarChar(255)
   CumRap           CumRap[]
@@ -81,13 +81,13 @@ model NguoiDung {
   so_dt           String? @db.VarChar(20)
   mat_khau        String? @db.VarChar(255)
   loai_nguoi_dung String? @db.VarChar(50)
-  avatar          String? @db.VarChar(255)
   googleId        String? @unique(map: "googleId") @db.VarChar(255)
+  avatar          String? @db.VarChar(255)
   DatVe           DatVe[]
 }
 
 model Phim {
-  ma_phim         Int         @id
+  ma_phim         Int         @id @default(autoincrement())
   ten_phim        String?     @db.VarChar(255)
   trailer         String?     @db.VarChar(255)
   hinh_anh        String?     @db.VarChar(255)
@@ -102,7 +102,7 @@ model Phim {
 }
 
 model RapPhim {
-  ma_rap     Int         @id
+  ma_rap     Int         @id @default(autoincrement())
   ten_rap    String?     @db.VarChar(255)
   ma_cum_rap Int?
   Ghe        Ghe[]
