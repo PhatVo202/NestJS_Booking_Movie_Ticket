@@ -91,6 +91,7 @@ export class TicketManagementService {
 
     return {
       thongTinPhim: {
+        maPhim: lichChieu.ma_phim,
         maLichChieu: lichChieu.ma_lich_chieu,
         tenCumRap: lichChieu.RapPhim.CumRap?.ten_cum_rap,
         tenRap: lichChieu.RapPhim.ten_rap,
@@ -113,16 +114,10 @@ export class TicketManagementService {
     const { ma_phim, ma_rap, gia_ve, ngay_gio_chieu } = body;
     const ngay_gio_chieu_format = moment(
       ngay_gio_chieu,
-      'DD-MM-YYYY HH:mm:ss',
+      'YYYY-MM-DD HH:mm:ss',
     ).toDate();
     const nowDate = new Date();
-    const isNowDate = moment(nowDate, 'DD-MM-YYYY HH:mm:ss').toDate();
-
-    console.log({
-      ngay_gio_chieu: ngay_gio_chieu,
-      ngay_gio_chieu_format: ngay_gio_chieu_format,
-      nowDate: isNowDate,
-    });
+    const isNowDate = moment(nowDate, 'YYYY-MM-DD HH:mm:ss').toDate();
 
     if (user.loai_nguoi_dung !== 'QuanTri') {
       throw new ForbiddenException('Bạn không có quyền tạo lịch chiếu!');

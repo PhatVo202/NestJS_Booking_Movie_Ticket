@@ -21,7 +21,7 @@ import {
   FilmUploadDto,
   RemoveQueryDto,
 } from './dto/film.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/common/decorator/user.decorator';
 import { NguoiDung } from 'generated/prisma';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -55,6 +55,9 @@ export class FilmManagementController {
     return await this.filmManagementService.getListWithDayFilm(query);
   }
 
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: FilmUploadDto })
   @Post('ThemPhimUploadHinh')
   @UseInterceptors(FileInterceptor('hinh_anh'))
   async createNewFilm(
@@ -65,6 +68,9 @@ export class FilmManagementController {
     return await this.filmManagementService.createNewFilm(body, file, user);
   }
 
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: FilmUpdateDto })
   @Post('CapNhatPhimUpload')
   @UseInterceptors(FileInterceptor('hinh_anh'))
   async updateFilm(
@@ -75,12 +81,14 @@ export class FilmManagementController {
     return await this.filmManagementService.updateFilm(body, file, user);
   }
 
+  @ApiBearerAuth()
   @Public()
   @Get('LayThongTinPhim')
   async getDetailFilm(@Query() query: FilmQueryMaPhimDto) {
     return await this.filmManagementService.getDetailFilm(query);
   }
 
+  @ApiBearerAuth()
   @Delete('XoaPhim')
   async removeFilm(@Query() query: RemoveQueryDto, @User() user: NguoiDung) {
     return await this.filmManagementService.removeFilm(query, user);

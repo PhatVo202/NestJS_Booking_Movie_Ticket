@@ -15,7 +15,7 @@ export class ProtectStrategy extends PassportStrategy(Strategy, 'protect') {
   }
 
   async validate(payload: any) {
-    console.log({ payload: payload });
+    // console.log({ payload: payload });
     const user = await this.prisma.nguoiDung.findUnique({
       where: {
         id: payload.userId,
@@ -30,7 +30,7 @@ export class ProtectStrategy extends PassportStrategy(Strategy, 'protect') {
     }
 
     const { mat_khau, ...safeUser } = user;
-    console.log({ safeUser: safeUser });
+    // console.log({ safeUser: safeUser });
 
     return safeUser;
   }

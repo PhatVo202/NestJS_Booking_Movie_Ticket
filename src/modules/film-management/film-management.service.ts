@@ -69,21 +69,46 @@ export class FilmManagementService {
     const pageNumber = Number(page);
     const limitNumber = Number(limit);
 
-    const whereCondition =
-      ten_phim?.trim() && tu_ngay && den_ngay
-        ? {
-            ngay_khoi_chieu: {
-              ...(tu_ngay && { gte: new Date(tu_ngay) }),
-              ...(den_ngay && { lte: new Date(den_ngay) }),
-            },
-            ten_phim: {
-              contains: ten_phim.trim(),
-            },
-          }
-        : {};
+    const tu_ngayDate = tu_ngay ? new Date(tu_ngay) : undefined;
+    const den_ngayDate = den_ngay ? new Date(den_ngay) : undefined;
+
+    if (tu_ngayDate && den_ngayDate && tu_ngayDate > den_ngayDate) {
+      throw new BadRequestException('Vui lòng nhập khoảng ngày hợp lệ');
+    }
+
+    // const whereCondition =
+    //   ten_phim?.trim() && tu_ngay && den_ngay
+    //     ? {
+    //         ngay_khoi_chieu: {
+    //           gte: tu_ngayDate,
+    //           lte: den_ngayDate,
+    //         },
+    //         ten_phim: {
+    //           contains: ten_phim.trim(),
+    //         },
+    //       }
+    //     : {};
+
+    const where: any = {};
+
+    if (ten_phim?.trim()) {
+      where.ten_phim = {
+        contains: ten_phim.trim(),
+      };
+    }
+
+    if (tu_ngayDate || den_ngayDate) {
+      where.ngay_khoi_chieu = {};
+      if (tu_ngayDate) {
+        where.ngay_khoi_chieu.gte = tu_ngayDate;
+      }
+      if (den_ngayDate) {
+        where.ngay_khoi_chieu.lte = den_ngayDate;
+      }
+    }
 
     const data = await paginate(this.prisma.phim, {
-      where: whereCondition,
+      where: where,
       page: pageNumber,
       limit: limitNumber,
     });

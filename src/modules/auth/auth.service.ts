@@ -33,7 +33,7 @@ export class AuthService {
       throw new BadRequestException('Cần đăng nhập MXH để có password');
     }
 
-    const isPassword = bcrypt.compare(mat_khau, userExist.mat_khau);
+    const isPassword = bcrypt.compareSync(mat_khau, userExist.mat_khau);
 
     if (!isPassword) {
       throw new BadRequestException('Mật khẩu không chính xác');
@@ -69,7 +69,7 @@ export class AuthService {
       );
     }
 
-    const hashPassword = await bcrypt.hash(mat_khau, 10);
+    const hashPassword = await bcrypt.hashSync(mat_khau, 10);
 
     const user = await this.prisma.nguoiDung.create({
       data: {

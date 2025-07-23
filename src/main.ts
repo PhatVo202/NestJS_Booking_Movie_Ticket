@@ -9,8 +9,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
+    .setTitle('My API')
+    .setDescription('The Movie Booking Ticket API description')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
@@ -24,6 +24,8 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('api/v1', { exclude: [''] });
+
+  app.enableCors({ origin: true });
 
   //GLOBAL
   const reflector = app.get(Reflector);

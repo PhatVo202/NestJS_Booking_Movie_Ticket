@@ -7,14 +7,15 @@ import { NguoiDung } from 'generated/prisma';
 import { cloudinary } from 'src/common/cloudinary/init.cloudinary';
 import { UploadApiResponse } from 'cloudinary';
 import { PrismaService } from '../prisma/prisma.service';
-import * as path from 'path';
-import * as fs from 'fs';
 import {
   CreateUserDto,
+  GetInfoUserDto,
+  UpdateUserDto,
   UserQueryDto,
   UserQueryPhanTrangDto,
 } from './dto/user.dto';
 import { paginate } from 'src/common/helpers/paginate.helper';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -47,7 +48,7 @@ export class UserService {
           id: Number(user.id),
         },
         data: {
-          avatar: uploadResult.public_id,
+          avatar: uploadResult.secure_url,
         },
       });
 
@@ -112,7 +113,47 @@ export class UserService {
     }
   }
 
+  async findAll(query: UserQueryDto) {
+    const { tuKhoa } = query;
+
+    if (tuKhoa && tuKhoa !== '') {
+      const dataUser = await this.prisma.nguoiDung.findMany({
+        where: {
+          ho_ten: {
+            contains: tuKhoa.trim(),
+          },
+        },
+      });
+      return dataUser;
+    } else {
+      const dataUser = await this.prisma.nguoiDung.findMany();
+      return dataUser;
+    }
+  }
+
   async getAllListUserPhanTrang(query: UserQueryPhanTrangDto) {
+    const { tuKhoa, page = '1', limit = '10' } = query;
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+    const skip = (pageNumber - 1) * limitNumber;
+    const whereCondition = tuKhoa?.trim()
+      ? {
+          ho_ten: {
+            contains: tuKhoa.trim(),
+          },
+        }
+      : {};
+
+    const data = await paginate(this.prisma.nguoiDung, {
+      where: whereCondition,
+      page: pageNumber,
+      limit: limitNumber,
+    });
+
+    return data;
+  }
+
+  async findAllPaginate(query: UserQueryPhanTrangDto) {
     const { tuKhoa, page = '1', limit = '10' } = query;
     const pageNumber = Number(page);
     const limitNumber = Number(limit);
@@ -143,6 +184,10 @@ export class UserService {
       throw new ForbiddenException('Bạn không có quyền!');
     }
 
+    const { mat_khau } = body;
+
+    const hashPassword = bcrypt.hashSync(mat_khau, 10);
+
     const userExits = await this.prisma.nguoiDung.findUnique({
       where: {
         tai_khoan: body.tai_khoan,
@@ -156,14 +201,86 @@ export class UserService {
     const data = await this.prisma.nguoiDung.create({
       data: {
         ...body,
+        mat_khau: hashPassword,
       },
     });
 
-    return data;
+    const { mat_khau: _, ...safeData } = data;
+
+    return safeData;
   }
 
-  async updateUser() {
-    return 'update success';
+  async updateUser(body: UpdateUserDto) {
+    const { tai_khoan, mat_khau, so_dt, email, ho_ten } = body;
+    const hashPassword = bcrypt.hashSync(mat_khau, 10);
+    const isTaiKhoan = await this.prisma.nguoiDung.findUnique({
+      where: {
+        tai_khoan: tai_khoan,
+      },
+    });
+
+    const data = {
+      tai_khoan: tai_khoan,
+      mat_khau: hashPassword,
+      so_dt: so_dt,
+      email: email,
+      ho_ten: ho_ten,
+      loai_nguoi_dung: isTaiKhoan?.loai_nguoi_dung,
+    };
+
+    if (tai_khoan !== isTaiKhoan?.tai_khoan) {
+      throw new BadRequestException('Bạn không có quyền thay đổi tài khoản');
+    }
+
+    const result = await this.prisma.nguoiDung.update({
+      where: {
+        tai_khoan: tai_khoan,
+      },
+      data: {
+        ...data,
+      },
+    });
+
+    const { mat_khau: _, loai_nguoi_dung, ...safeData } = result;
+
+    return safeData;
+  }
+
+  async updateUserForAdmin(body: CreateUserDto, user: NguoiDung) {
+    const { tai_khoan, mat_khau, ho_ten, email, so_dt, loai_nguoi_dung } = body;
+    const hashPassword = bcrypt.hashSync(mat_khau, 10);
+
+    const isTaiKhoan = await this.prisma.nguoiDung.findUnique({
+      where: {
+        tai_khoan: tai_khoan,
+      },
+    });
+
+    const data = {
+      tai_khoan,
+      mat_khau: hashPassword,
+      so_dt,
+      email,
+      ho_ten,
+      loai_nguoi_dung,
+    };
+
+    if (user.loai_nguoi_dung !== 'QuanTri') {
+      throw new ForbiddenException('Vui lòng đăng nhập bằng Admin');
+    }
+
+    if (tai_khoan !== isTaiKhoan?.tai_khoan) {
+      throw new BadRequestException('không thể thay đổi tài khoản');
+    }
+
+    return await this.prisma.nguoiDung.update({
+      where: {
+        tai_khoan: tai_khoan,
+      },
+      data: {
+        ...data,
+      },
+    });
   }
 
   async removeUser(id, user: NguoiDung) {
@@ -188,5 +305,25 @@ export class UserService {
     });
 
     return 'Xoá thành công';
+  }
+
+  async getInfoUser(query: GetInfoUserDto, user: NguoiDung) {
+    const { tai_khoan } = query;
+    if (user.loai_nguoi_dung !== 'QuanTri') {
+      throw new ForbiddenException('Bạn không có quyền!');
+    }
+
+    if (!tai_khoan && tai_khoan === '') {
+      throw new BadRequestException('Vui lớn nhập tài khoản');
+    }
+    const data = await this.prisma.nguoiDung.findMany({
+      where: {
+        tai_khoan: {
+          contains: tai_khoan.trim(),
+        },
+      },
+    });
+
+    return data;
   }
 }
